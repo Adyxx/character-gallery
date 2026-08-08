@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ character.name|default:'Character' }} | Character Gallery{% endblock %}
+
+{% block content %}
+  <div class="detail-layout">
+    <section class="detail-panel">
+      {% if character.display_image %}
+        <img class="detail-image" src="{{ character.display_image.url }}" alt="{{ character.name }}">
+      {% endif %}
+      <h1 class="page-title">{{ character.name|default:'Unnamed character' }}</h1>
+      {% if character.title %}<p class="muted">{{ character.title }}</p>{% endif %}
+      {% if character.about %}<p>{{ character.about }}</p>{% endif %}
+    </section>
+    <section class="detail-panel">
+      <h2>Overview</h2>
+      <dl class="stack detail-facts">
+        {% if character.gender %}<div><strong>Gender:</strong> {{ character.get_gender_display }}</div>{% endif %}
+        {% if character.race and character.race.name %}<div><strong>Race:</strong> <a href="{% url 'core:race_detail' character.race.name %}">{{ character.race.name }}</a></div>{% endif %}
+        {% if character.role %}<div><strong>Role:</strong> {{ character.role }}</div>{% endif %}
+        {% if character.importance %}<div><strong>Importance:</strong> {{ character.get_importance_display }}</div>{% endif %}
+        {% if character.age is not None %}<div><strong>Age:</strong> {{ character.age }}</div>{% endif %}
+        {% if character.height %}<div><strong>Height:</strong> {{ character.height }}</div>{% endif %}
+        {% if character.birthday %}<div><strong>Birthday:</strong> {{ character.birthday }}</div>{% endif %}
+        {% if character.birthplace and character.birthplace.domain and character.birthplace.domain.name and character.birthplace.name %}<div><strong>Birthplace:</strong> <a href="{% url 'core:territory_detail' character.birthplace.domain.name character.birthplace.name %}">{{ character.birthplace.name }}</a></div>{% endif %}
+        {% if character.affiliation and character.affiliation.name %}<div><strong>Affiliation:</strong> <a href="{% url 'core:affliction_detail' character.affiliation.name %}">{{ character.affiliation.name }}</a></div>{% endif %}
+        {% if character.expression %}<div><strong>Expression:</strong> {{ character.get_expression_display }}</div>{% endif %}
+        {% if character.coherence_state %}<div><strong>Coherence state:</strong> {{ character.get_coherence_state_display }}</div>{% endif %}
+      </dl>
+
+      <div class="section">
+        <h2>Story Fragments</h2>
+        {% for fragment in character.story_fragments.all %}
+          <article class="section">
+            <h3>{{ fragment.title|default:'Untitled fragment' }}</h3>
+            <p>{{ fragment.text|default:'-' }}</p>
+          </article>
+        {% empty %}
+          <p class="muted">No story fragments yet.</p>
+        {% endfor %}
+      </div>
+
+      <div class="section">
+        <h2>Trivia</h2>
+        <ul class="info-list">
+          {% for trivia in character.trivia_entries.all %}
+            <li>{{ trivia.text }}</li>
+          {% empty %}
+            <li class="muted">No trivia entries yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <title>{% block title %}Character Gallery{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'core/css/site.css' %}">
+  <script defer src="{% static 'core/js/site.js' %}"></script>
+</head>
+<body>
+  {% include 'partials/navbar.html' %}
+  <main class="site-shell">
+    {% block content %}{% endblock %}
+  </main>
+  {% include 'partials/footer.html' %}
+</body>
+</html>

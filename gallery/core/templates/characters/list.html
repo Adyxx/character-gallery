@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Characters | Character Gallery{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">Characters</h1>
+  <div class="grid cards">
+    {% for character in characters %}
+      <a class="card card-character"{% if character.name %} href="{% url 'core:character_detail' character.name %}"{% endif %}>
+        <div class="card-media card-media-character">
+          {% if character.display_image %}
+            <img src="{{ character.display_image.url }}" alt="{{ character.name }}">
+          {% endif %}
+          <div class="card-overlay">
+            <div class="card-lines">
+              <div class="card-line card-name-line">{{ character.name|default:'Unnamed character' }}</div>
+              {% if character.title %}<div class="card-line card-title-line">{{ character.title }}</div>{% endif %}
+              {% if character.role or character.affiliation %}
+                <div class="card-line card-role-line">
+                  {% if character.role %}{{ character.role }}{% endif %}
+                  {% if character.role and character.affiliation and character.affiliation.name %} - {% endif %}
+                  {% if character.affiliation and character.affiliation.name %}{{ character.affiliation.name }}{% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <p class="muted">No characters yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

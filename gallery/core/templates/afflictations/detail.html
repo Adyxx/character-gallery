@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ affiliation.name|default:'Affliction' }} | Character Gallery{% endblock %}
+
+{% block content %}
+  <section class="detail-panel">
+    {% if affiliation.symbol %}
+      <img src="{{ affiliation.symbol.url }}" alt="{{ affiliation.name }} symbol">
+    {% endif %}
+    <h1 class="page-title">{{ affiliation.name|default:'Unnamed affliction' }}</h1>
+    {% if affiliation.about %}<p>{{ affiliation.about }}</p>{% endif %}
+
+    <div class="section">
+      <h2>Territories</h2>
+      <ul class="info-list">
+        {% for territory in affiliation.territories.all %}
+          <li>
+            {% if territory.domain and territory.domain.name and territory.name %}
+              <a href="{% url 'core:territory_detail' territory.domain.name territory.name %}">{{ territory.name }}</a>
+            {% else %}
+              {{ territory.name|default:'Unnamed territory' }}
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="muted">No territories assigned.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

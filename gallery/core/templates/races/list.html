@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Races | Character Gallery{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">Races</h1>
+  <div class="stack">
+    {% for race in races %}
+      {% if race.name %}
+        <a href="{% url 'core:race_detail' race.name %}">{{ race.name }}</a>
+      {% else %}
+        <span class="muted">Unnamed race</span>
+      {% endif %}
+    {% empty %}
+      <p class="muted">No races yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
