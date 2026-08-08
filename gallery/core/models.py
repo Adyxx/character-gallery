@@ -55,7 +55,7 @@ class Domain(models.Model):
 class Race(models.Model):
   name = models.CharField(max_length=255, blank=True, null=True)
   about = models.TextField(blank=True, null=True)
-  symbol = models.ImageField(upload_to="race_symbols/", blank=True, null=True)
+  symbol = models.ImageField(upload_to="media/race_symbols/", blank=True, null=True)
   territories = models.ManyToManyField(Territory, blank=True, related_name="races")
 
   def __str__(self):
@@ -65,7 +65,7 @@ class Race(models.Model):
 class Affiliation(models.Model):
   name = models.CharField(max_length=255, blank=True, null=True)
   about = models.TextField(blank=True, null=True)
-  symbol = models.ImageField(upload_to="affiliation_symbols/", blank=True, null=True)
+  symbol = models.ImageField(upload_to="media/affiliation_symbols/", blank=True, null=True)
   territories = models.ManyToManyField(Territory, blank=True, related_name="affiliations")
 
   def __str__(self):
@@ -128,8 +128,8 @@ class Character(models.Model):
     null=True,
   )
   about = models.TextField(blank=True, null=True)
-  display_image = models.ImageField(upload_to="character_display_images/", blank=True, null=True)
-  icon_image = models.ImageField(upload_to="character_icon_images/", blank=True, null=True)
+  display_image = models.ImageField(upload_to="media/character_display_images/", blank=True, null=True)
+  icon_image = models.ImageField(upload_to="media/character_icon_images/", blank=True, null=True)
   expression = models.CharField(
     max_length=32,
     choices=ExpressionChoices.choices,
@@ -158,7 +158,7 @@ class Character(models.Model):
 
 
 class GalleryImage(models.Model):
-  image = models.ImageField(upload_to="gallery_images/", blank=True, null=True)
+  image = models.ImageField(upload_to="media/gallery_images/", blank=True, null=True)
   caption = models.CharField(max_length=255, blank=True, null=True)
   character = models.ForeignKey(
     Character,

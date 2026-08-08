@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to="affiliation_symbols/",
+                        upload_to="media/affiliation_symbols/",
                     ),
                 ),
             ],
@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to="race_symbols/",
+                        upload_to="media/race_symbols/",
                     ),
                 ),
             ],
@@ -187,7 +187,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="character",
             name="display_image",
-            field=models.ImageField(blank=True, null=True, upload_to="character_display_images/"),
+            field=models.ImageField(blank=True, null=True, upload_to="media/character_display_images/"),
         ),
         migrations.AddField(
             model_name="character",
@@ -207,7 +207,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="character",
             name="icon_image",
-            field=models.ImageField(blank=True, null=True, upload_to="character_icon_images/"),
+            field=models.ImageField(blank=True, null=True, upload_to="media/character_icon_images/"),
         ),
         migrations.AddField(
             model_name="character",
@@ -264,7 +264,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "image",
-                    models.ImageField(blank=True, null=True, upload_to="gallery_images/"),
+                    models.ImageField(blank=True, null=True, upload_to="media/gallery_images/"),
                 ),
                 ("caption", models.CharField(blank=True, max_length=255, null=True)),
                 (
