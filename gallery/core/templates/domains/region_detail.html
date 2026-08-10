@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load lore_tags %}
+
+{% block title %}{{ region.name|default:'Region' }} | Character Gallery{% endblock %}
+
+{% block content %}
+<section class="detail-panel">
+
+    <h1 class="page-title">
+        {{ region.name|default:'Unnamed region' }}
+    </h1>
+
+    {% if region.about %}
+        <p>{{ region.about|lore_links|safe }}</p>
+    {% endif %}
+
+    <p class="muted">
+        Domain:
+        {% if region.domain and region.domain.name %}
+            <a href="{% url 'core:domain_detail' region.domain.slug %}">
+                {{ region.domain.name }}
+            </a>
+        {% else %}
+            -
+        {% endif %}
+    </p>
+
+</section>
+{% endblock %}

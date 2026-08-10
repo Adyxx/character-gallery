@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
-
-{% block title %}Afflictations | Character Gallery{% endblock %}
+{% load lore_tags %}
+{% block title %}Affiliations | Character Gallery{% endblock %}
 
 {% block content %}
-  <h1 class="page-title">Afflictations</h1>
+  <h1 class="page-title">Affiliations</h1>
 
   {% for group in grouped_affiliations %}
     <section class="section">
       <h2>{{ group.domain.name|default:'Unnamed domain' }}</h2>
       <div class="stack">
         {% for affiliation in group.affiliations %}
-          {% if affiliation.name %}
-            <a href="{% url 'core:affliction_detail' affiliation.name %}">{{ affiliation.name }}</a>
+          {% if affiliation.slug %}
+            <a href="{% url 'core:affiliation_detail' affiliation.slug %}">{{ affiliation.name }}</a>
           {% else %}
             <span class="muted">Unnamed affliction</span>
           {% endif %}
         {% empty %}
-          <p class="muted">No afflictations in this domain.</p>
+          <p class="muted">No affiliations in this domain.</p>
         {% endfor %}
       </div>
     </section>
@@ -26,13 +26,13 @@
     <h2>Unassigned</h2>
     <div class="stack">
       {% for affiliation in unassigned_affiliations %}
-        {% if affiliation.name %}
-          <a href="{% url 'core:affliction_detail' affiliation.name %}">{{ affiliation.name }}</a>
+        {% if affiliation.slug %}
+          <a href="{% url 'core:affiliation_detail' affiliation.slug %}">{{ affiliation.name }}</a>
         {% else %}
           <span class="muted">Unnamed affliction</span>
         {% endif %}
       {% empty %}
-        <p class="muted">No unassigned afflictations.</p>
+        <p class="muted">No unassigned affiliations.</p>
       {% endfor %}
     </div>
   </section>

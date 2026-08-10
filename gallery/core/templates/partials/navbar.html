@@ -1,12 +1,23 @@
 <header class="site-header">
   <div class="nav-row">
-    <strong><a href="{% url 'core:home' %}">Character Gallery</a></strong>
+    <strong class="brand-mark"><a href="{% url 'core:home' %}">Project: Eidolune</a></strong>
     <nav class="nav-links" aria-label="Primary">
-      <a href="{% url 'core:home' %}">Home</a>
-      <a href="{% url 'core:characters' %}">Characters</a>
-      <a href="{% url 'core:races' %}">Races</a>
-      <a href="{% url 'core:afflictations' %}">Afflictations</a>
-      <a href="{% url 'core:domains' %}">Domains</a>
+      <div class="nav-dropdown">
+        <a class="nav-parent" href="{% url 'core:codex' %}">Codex</a>
+        <div class="nav-dropdown-menu">
+          <a href="{% url 'core:races' %}">Races &amp; Kin</a>
+          <a href="{% url 'core:affiliations' %}">Afflictions</a>
+          <a href="{% url 'core:submerges' %}">Anomalies &amp; Submerges</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a class="nav-parent" href="{% url 'core:atlas' %}">Atlas</a>
+        <div class="nav-dropdown-menu">
+          <a href="{% url 'core:domains' %}">Domains</a>
+        </div>
+      </div>
+      <a href="{% url 'core:characters' %}">Dramatis Personae</a>
+      <a href="{% url 'core:chronicles' %}">Chronicles</a>
     </nav>
   </div>
 </header>

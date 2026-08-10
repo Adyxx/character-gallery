@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load lore_tags %}
+{% block title %}Chronicles | Project: Eidolune{% endblock %}
+
+{% block content %}
+  <section class="detail-panel">
+    <h1 class="page-title">Chronicles</h1>
+    <div class="stack">
+      {% for fragment in story_fragments %}
+        <details class="logbook-entry">
+          <summary>{{ fragment.title|default:'Untitled fragment' }}</summary>
+          <p>{{ fragment.text|default:'-' }}</p>
+        </details>
+      {% empty %}
+        <p class="muted">No chronicles logged yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

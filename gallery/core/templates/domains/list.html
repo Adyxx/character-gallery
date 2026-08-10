@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-
+{% load lore_tags %}
 {% block title %}Domains | Character Gallery{% endblock %}
 
 {% block content %}
   <h1 class="page-title">Domains</h1>
   <div class="stack">
     {% for domain in domains %}
-      {% if domain.name %}
-        <a href="{% url 'core:domain_detail' domain.name %}">{{ domain.name }}</a>
+      {% if domain.slug %}
+        <a href="{% url 'core:domain_detail' domain.slug %}">{{ domain.name }}</a>
       {% else %}
         <span class="muted">Unnamed domain</span>
       {% endif %}

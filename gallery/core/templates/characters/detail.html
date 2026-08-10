@@ -1,55 +1,138 @@
 {% extends 'base.html' %}
-
+{% load lore_tags %}
 {% block title %}{{ character.name|default:'Character' }} | Character Gallery{% endblock %}
 
 {% block content %}
   <div class="detail-layout">
-    <section class="detail-panel">
-      {% if character.display_image %}
-        <img class="detail-image" src="{{ character.display_image.url }}" alt="{{ character.name }}">
-      {% endif %}
-      <h1 class="page-title">{{ character.name|default:'Unnamed character' }}</h1>
-      {% if character.title %}<p class="muted">{{ character.title }}</p>{% endif %}
-      {% if character.about %}<p>{{ character.about }}</p>{% endif %}
-    </section>
-    <section class="detail-panel">
-      <h2>Overview</h2>
-      <dl class="stack detail-facts">
-        {% if character.gender %}<div><strong>Gender:</strong> {{ character.get_gender_display }}</div>{% endif %}
-        {% if character.race and character.race.name %}<div><strong>Race:</strong> <a href="{% url 'core:race_detail' character.race.name %}">{{ character.race.name }}</a></div>{% endif %}
-        {% if character.role %}<div><strong>Role:</strong> {{ character.role }}</div>{% endif %}
-        {% if character.importance %}<div><strong>Importance:</strong> {{ character.get_importance_display }}</div>{% endif %}
-        {% if character.age is not None %}<div><strong>Age:</strong> {{ character.age }}</div>{% endif %}
-        {% if character.height %}<div><strong>Height:</strong> {{ character.height }}</div>{% endif %}
-        {% if character.birthday %}<div><strong>Birthday:</strong> {{ character.birthday }}</div>{% endif %}
-        {% if character.birthplace and character.birthplace.domain and character.birthplace.domain.name and character.birthplace.name %}<div><strong>Birthplace:</strong> <a href="{% url 'core:territory_detail' character.birthplace.domain.name character.birthplace.name %}">{{ character.birthplace.name }}</a></div>{% endif %}
-        {% if character.affiliation and character.affiliation.name %}<div><strong>Affiliation:</strong> <a href="{% url 'core:affliction_detail' character.affiliation.name %}">{{ character.affiliation.name }}</a></div>{% endif %}
-        {% if character.expression %}<div><strong>Expression:</strong> {{ character.get_expression_display }}</div>{% endif %}
-        {% if character.coherence_state %}<div><strong>Coherence state:</strong> {{ character.get_coherence_state_display }}</div>{% endif %}
-      </dl>
-
-      <div class="section">
-        <h2>Story Fragments</h2>
-        {% for fragment in character.story_fragments.all %}
-          <article class="section">
-            <h3>{{ fragment.title|default:'Untitled fragment' }}</h3>
-            <p>{{ fragment.text|default:'-' }}</p>
-          </article>
-        {% empty %}
-          <p class="muted">No story fragments yet.</p>
-        {% endfor %}
+    <section class="detail-panel detail-tabs-panel">
+      <div class="detail-tablist" role="tablist" aria-label="Character details">
+        <button class="detail-tab is-active" type="button" data-tab-target="manifest" role="tab" aria-selected="true">Manifest</button>
+        <button class="detail-tab" type="button" data-tab-target="resonance" role="tab" aria-selected="false">Resonance</button>
+        <button class="detail-tab" type="button" data-tab-target="logbook" role="tab" aria-selected="false">Logbook</button>
+        <button class="detail-tab" type="button" data-tab-target="trivia" role="tab" aria-selected="false">Trivia Entries</button>
+        <button class="detail-tab" type="button" data-tab-target="gallery" role="tab" aria-selected="false">Gallery</button>
       </div>
 
-      <div class="section">
-        <h2>Trivia</h2>
-        <ul class="info-list">
-          {% for trivia in character.trivia_entries.all %}
-            <li>{{ trivia.text }}</li>
-          {% empty %}
-            <li class="muted">No trivia entries yet.</li>
-          {% endfor %}
-        </ul>
+      <div class="detail-tabpanels">
+        <article class="detail-tabpanel is-active" data-tab-panel="manifest" role="tabpanel">
+          <div class="detail-character-header">
+            <div class="detail-character-media">
+              {% if character.display_image %}
+                <img class="detail-image" src="{{ character.display_image.url }}" alt="{{ character.name }}">
+              {% endif %}
+            </div>
+            <div class="detail-character-copy">
+              <h1 class="page-title">{{ character.name|default:'Unnamed character' }}</h1>
+              {% if character.title %}<p class="detail-kicker">{{ character.title }}</p>{% endif %}
+              {% if character.about %}<p>{{ character.about|lore_links|safe }}</p>{% endif %}
+              <dl class="stack detail-facts">
+                {% if character.gender %}<div><strong>Gender:</strong> {{ character.get_gender_display }}</div>{% endif %}
+                {% if character.role %}<div><strong>Role:</strong> {{ character.role }}</div>{% endif %}
+                {% if character.age is not None %}<div><strong>Age:</strong> {{ character.age }}</div>{% endif %}
+                {% if character.height %}<div><strong>Height:</strong> {{ character.height }}</div>{% endif %}
+                {% if character.birthday %}<div><strong>Birth:</strong> {{ character.birthday }}</div>{% endif %}
+                {% if character.affiliation and character.affiliation.slug %}<div><strong>Affiliation:</strong> <a href="{% url 'core:affiliation_detail' character.affiliation.slug %}">{{ character.affiliation.name }}</a></div>{% endif %}
+                {% if character.race and character.race.slug %}<div><strong>Race:</strong> <a href="{% url 'core:race_detail' character.race.slug %}">{{ character.race.name }}</a></div>{% endif %}
+                {% if character.birthplace and character.birthplace.slug %}<div><strong>Birthplace:</strong> <a href="{% url 'core:region_detail' character.birthplace.slug %}">{{ character.birthplace.name }}</a></div>{% endif %}
+              </dl>
+            </div>
+          </div>
+        </article>
+
+        <article class="detail-tabpanel" data-tab-panel="resonance" role="tabpanel">
+          <div class="detail-character-header">
+            <div class="detail-character-media">
+              {% if character.display_image %}
+                <img class="detail-image" src="{{ character.display_image.url }}" alt="{{ character.name }}">
+              {% endif %}
+            </div>
+            <div class="detail-character-copy">
+              <h1 class="page-title">{{ character.name|default:'Unnamed character' }}</h1>
+              {% if character.title %}<p class="detail-kicker">{{ character.title }}</p>{% endif %}
+              <dl class="stack detail-facts">
+                {% if character.coherence_state %}<div><strong>Coherence State:</strong> {{ character.get_coherence_state_display }}</div>{% endif %}
+                {% if character.expression %}<div><strong>Expression Type:</strong> {{ character.get_expression_display }}</div>{% endif %}
+                {% if character.submerge_mutation_notes %}<div><strong>Submerge Mutation Notes:</strong> {{ character.submerge_mutation_notes }}</div>{% endif %}
+              </dl>
+            </div>
+          </div>
+        </article>
+
+        <article class="detail-tabpanel" data-tab-panel="logbook" role="tabpanel">
+          <div class="section">
+            <h2>Story Fragments</h2>
+            <ul class="story-list">
+              {% for fragment in character.story_fragments.all %}
+                <li>
+                  <a href="{% url 'core:character_story_detail' character.slug fragment.slug %}" onclick="sessionStorage.setItem('cg_return_to', location.pathname + location.hash);">{{ fragment.title|default:'Untitled fragment' }}</a>
+                </li>
+              {% empty %}
+                <li class="muted">No story fragments yet.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </article>
+
+        <article class="detail-tabpanel" data-tab-panel="trivia" role="tabpanel">
+          <div class="section">
+            <h2>Trivia Entries</h2>
+            <ul class="info-list">
+              {% for trivia in character.trivia_entries.all %}
+                <li>{{ trivia.text }}</li>
+              {% empty %}
+                <li class="muted">No trivia entries yet.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </article>
+
+        <article class="detail-tabpanel" data-tab-panel="gallery" role="tabpanel">
+          <div class="section">
+            <h2>Gallery</h2>
+            <div class="gallery-grid">
+              {% for image in character.gallery_images.all %}
+                <figure class="gallery-card">
+                  {% if image.image %}
+                    <img src="{{ image.image.url }}" alt="{{ image.caption|default:character.name }}">
+                  {% endif %}
+                  {% if image.caption %}<figcaption>{{ image.caption }}</figcaption>{% endif %}
+                </figure>
+              {% empty %}
+                <p class="muted">No gallery images yet.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
       </div>
     </section>
   </div>
+  <script>
+    (function(){
+      function activateTab(name){
+        var tabs = document.querySelectorAll('.detail-tab');
+        var panels = document.querySelectorAll('.detail-tabpanel');
+        tabs.forEach(function(t){
+          if (t.getAttribute('data-tab-target') === name){ t.classList.add('is-active'); t.setAttribute('aria-selected','true'); } else { t.classList.remove('is-active'); t.setAttribute('aria-selected','false'); }
+        });
+        panels.forEach(function(p){
+          if (p.getAttribute('data-tab-panel') === name){ p.classList.add('is-active'); } else { p.classList.remove('is-active'); }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        if (location.hash){
+          var name = location.hash.replace('#','');
+          if (name) activateTab(name);
+        }
+
+        document.querySelectorAll('.detail-tab').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            var target = btn.getAttribute('data-tab-target');
+            history.replaceState(null, '', location.pathname + '#' + target);
+            activateTab(target);
+          });
+        });
+      });
+    })();
+  </script>
 {% endblock %}
