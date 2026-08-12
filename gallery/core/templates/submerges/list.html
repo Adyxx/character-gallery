@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load lore_tags %}
+{% load markdownx %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">Documented Submerges</h1>
+  <p class="page-subtitle">Anomalous zone indexes recorded by the Alchemical Cartographers.</p>
+
+  <div class="stack">
+    {% for submerge in submerges %}
+      {% if submerge.slug %}
+        <a href="{% url 'core:submerge_detail' submerge.slug %}" class="submerge-list-item">
+          <span class="submerge-list-name">{{ submerge.name }}</span>
+          {% if submerge.category %}
+            <span class="muted-tag">[{{ submerge.category.name }}]</span>
+          {% endif %}
+        </a>
+      {% else %}
+        <span class="muted">Unnamed submerge</span>
+      {% endif %}
+    {% empty %}
+      <p class="muted">No submerges documented yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

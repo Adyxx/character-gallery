@@ -1,6 +1,27 @@
 {% extends 'base.html' %}
-{% load lore_tags %}
-{% block title %}Character Gallery{% endblock %}
-
 {% block content %}
+<div class="domain-page-wrapper">
+  <div style="text-align: center; margin: 4rem 0;">
+    <h1 style="font-size: 3rem; letter-spacing: 0.05em; text-transform: uppercase;">Eidolune</h1>
+    <p style="font-style: italic; color: var(--ink-muted); margin-top: 1rem;">"The reality is loose. The anomalies bloom. Will you transcend or dissolve?"</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; margin-top: 4rem;">
+    <div class="wiki-card" style="padding: 2rem; text-align: center;">
+      <h2>The Codex</h2>
+      <p style="margin: 1rem 0; font-size: 0.9rem;">Study the anatomy of races, factions, and alchemical traits.</p>
+      <a href="{% url 'core:codex' %}" class="sub-meta" style="font-weight: bold; color: var(--accent);">Open Archives →</a>
+    </div>
+    <div class="wiki-card" style="padding: 2rem; text-align: center;">
+      <h2>The Atlas</h2>
+      <p style="margin: 1rem 0; font-size: 0.9rem;">Map out the domains, region boundaries, and active landmarks.</p>
+      <a href="{% url 'core:atlas' %}" class="sub-meta" style="font-weight: bold; color: var(--accent);">Examine Maps →</a>
+    </div>
+    <div class="wiki-card" style="padding: 2rem; text-align: center;">
+      <h2>Chronicles</h2>
+      <p style="margin: 1rem 0; font-size: 0.9rem;">Delve into history fragments, world crises, and personal journals.</p>
+      <a href="{% url 'core:chronicles' %}" class="sub-meta" style="font-weight: bold; color: var(--accent);">Read Records →</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

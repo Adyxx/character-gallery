@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load lore_tags %}
+{% load markdownx %}
+
+{% block title %}{{ fauna.name|default:'Fauna' }} | Eidolune Bestiary{% endblock %}
+
+{% block content %}
+<div class="domain-page-wrapper">
+
+  <div class="domain-hero-zone">
+    
+    <div class="domain-intro">
+      <nav class="breadcrumb">
+        <a href="{% url 'core:codex' %}">← Back to Codex</a>
+      </nav>
+      
+      <header class="domain-header">
+        <h1 class="page-title">
+          {{ fauna.name|default:'Unnamed Creature' }}
+          {% if fauna.behavior == 'AGGRESSIVE' or fauna.behavior == 'ANOMALOUS' %}
+            <span class="hazard-indicator-dot" title="Dangerous / Unpredictable Entity">⚠️</span>
+          {% endif %}
+        </h1>
+      </header>
+      
+      {% if fauna.about %}
+        <div class="lore-text main-about">
+          {{ fauna.about|markdownify|lore_links|safe }}
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="domain-sidebar-top">
+      <div class="infobox">
+        <div class="infobox-img-wrapper">
+          {% if fauna.display_image %}
+            <img src="{{ fauna.display_image.url }}" alt="{{ fauna.name }}">
+          {% else %}
+            <div class="media-placeholder">No Biological Illustration Available</div>
+          {% endif %}
+        </div>
+
+        <div class="infobox-data">
+          <h3 class="infobox-title">Bestiary Registry</h3>
+          <dl class="infobox-list" style="display: block;">
+            
+            <div>
+              <dt>Behavior</dt>
+              <dd>{{ fauna.get_behavior_display }}</dd>
+            </div>
+
+            <div>
+              <dt>Dietary Type</dt>
+              <dd>
+                {% if fauna.diet == 'ESSENCE_EATER' %}
+                  ✨ {{ fauna.get_diet_display }}
+                {% else %}
+                  🍖 {{ fauna.get_diet_display }}
+                {% endif %}
+              </dd>
+            </div>
+
+            {% if fauna.exclusive_to_submerge %}
+              <div>
+                <dt>Anomalous Habitat</dt>
+                <dd>
+                  🌌 Exclusive to <a href="{% url 'core:submerge_detail' fauna.exclusive_to_submerge.slug %}">{{ fauna.exclusive_to_submerge.name }}</a>
+                </dd>
+              </div>
+            {% else %}
+              <div>
+                <dt>Natural Distribution</dt>
+                <dd>
+                  <ul>
+                    {% for region in fauna.found_in_regions.all %}
+                      <li>🗺️ <a href="{% url 'core:region_detail' region.domain.slug region.slug %}">{{ region.name }}</a></li>
+                    {% empty %}
+                      <li class="muted">Undocumented location.</li>
+                    {% endfor %}
+                  </ul>
+                </dd>
+              </div>
+            {% endif %}
+            
+          </dl>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+
+  <main class="domain-full-content">
+
+    {% for section in fauna.stories.all %}
+      {% if not section.is_world_story %}
+        <section class="domain-section custom-lore">
+          <h2>{{ section.title }}</h2>
+          {% if section.image %}
+            <div class="lore-inline-image"><img src="{{ section.image.url }}" alt="{{ section.title }}"></div>
+          {% endif %}
+          <div class="lore-text">{{ section.text|markdownify|lore_links|safe }}</div>
+        </section>
+      {% endif %}
+    {% endfor %}
+
+    {% if fauna.trivia_entries.all %}
+      <section class="domain-section">
+        <h2>Field Notes &amp; Encounters (Trivia)</h2>
+        <ul class="info-list">
+          {% for trivia in fauna.trivia_entries.all %}
+            <li>
+              {% if trivia.title %}<strong>{{ trivia.title }}:</strong>{% endif %}
+              {{ trivia.text|markdownify|lore_links|safe }}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    {% if fauna.gallery_images.all %}
+      <section class="domain-section">
+        <h2>Visual Records &amp; Ecological Archive</h2>
+        <div class="mini-gallery-grid">
+          {% for img in fauna.gallery_images.all %}
+            <figure class="gallery-item">
+              <a href="{{ img.image.url }}" target="_blank">
+                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
+              </a>
+              {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </main>
+
+</div>
+{% endblock %}

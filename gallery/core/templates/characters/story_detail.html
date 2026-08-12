@@ -1,74 +1,118 @@
 {% extends 'base.html' %}
 {% load lore_tags %}
+{% load markdownx %}
+
 {% block title %}{{ fragment.title|default:'Story' }} | {{ fragment.get_absolute_url }}{% endblock %}
+{% block body_class %}body-chronicles-page{% endblock %}
 
 {% block content %}
-  <section class="detail-panel story-detail">
-    <div class="stack">
-      <div class="story-close">
-        <a id="close-button" class="close-button" href="{% url 'core:character_detail' character.slug %}#logbook" aria-label="Close">X</a>
-      </div>
 
-      {% if fragment.image %}
-        <div class="story-image">
-          <img src="{{ fragment.image.url }}" alt="{{ fragment.title }}">
-        </div>
-      {% endif %}
+<div class="zzz-story-overlay">
+  <div class="zzz-story-viewport">
 
-      <h1 class="page-title">{{ fragment.title|default:'Untitled fragment' }}</h1>
+<div class="zzz-story-close-zone">
+  <a id="close-button"
+     class="zzz-close-btn"
+     href="{% url 'core:character_detail' character.slug %}#logbook"
+     aria-label="Close">
+    <span class="zzz-close-icon">❌</span>
+  </a>
+</div>
 
-      <div class="story-body">
+<div class="zzz-story-card">
+
+  {% if fragment.image %}
+    <div class="zzz-story-media">
+      <img src="{{ fragment.image.url }}" alt="{{ fragment.title }}">
+    </div>
+  {% endif %}
+
+  <div class="zzz-story-content">
+    <span class="zzz-story-badge">Story Record</span>
+
+    <h1 class="zzz-story-title">
+      {{ fragment.title|default:'Untitled Fragment' }}
+    </h1>
+
+    <div class="zzz-story-body-wrapper" id="story-wrapper">
+      <div class="zzz-story-body">
         {% if fragment.text %}
-          {% if fragment.text|length > 400 %}
-            <p id="story-excerpt">{{ fragment.text|slice:":400"|linebreaksbr }}</p>
-            <div id="story-full" style="display:none;">{{ fragment.text|linebreaksbr }}</div>
-            <button id="delve-button" class="button">Delve deeper</button>
-          {% else %}
-            <div>{{ fragment.text|linebreaksbr }}</div>
-          {% endif %}
+          {{ fragment.text|markdownify|lore_links|safe }}
         {% else %}
-          <p class="muted">-</p>
+          <p class="muted">No records found within this fragment.</p>
         {% endif %}
       </div>
-    </div>
-  </section>
 
-  <script>
-    (function(){
-      var btn = document.getElementById('delve-button');
-      if (!btn) return;
-      var full = document.getElementById('story-full');
-      var excerpt = document.getElementById('story-excerpt');
-      btn.addEventListener('click', function(){
-        if (full.style.display === 'none'){
-          full.style.display = 'block';
-          excerpt.style.display = 'none';
-          btn.textContent = 'Show less';
-        } else {
-          full.style.display = 'none';
-          excerpt.style.display = 'block';
-          btn.textContent = 'Delve deeper';
-        }
-      });
-    })();
-  </script>
-  <script>
-    (function(){
-      var close = document.getElementById('close-button');
-      {% if return_to %}
-        var serverReturn = "{{ return_to|escapejs }}";
-      {% else %}
-        var serverReturn = null;
-      {% endif %}
-      try {
-        if (serverReturn){
-          close.setAttribute('href', serverReturn);
-        } else if (sessionStorage.getItem('cg_return_to')){
-          close.setAttribute('href', sessionStorage.getItem('cg_return_to'));
-          sessionStorage.removeItem('cg_return_to');
-        }
-      } catch(e) {
+      <div class="zzz-text-fade-shield" id="text-shield"></div>
+    </div>
+
+    {% if fragment.text and fragment.text|length > 400 %}
+      <div class="zzz-action-zone">
+        <button id="delve-button" class="zzz-pill-btn">
+          <span id="btn-text">Delve Deeper</span>
+          <span id="btn-arrow">⌇</span>
+        </button>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+
+  </div>
+</div>
+
+<script>
+  (function(){
+    const btn = document.getElementById('delve-button');
+    if (!btn) return;
+
+    const wrapper = document.getElementById('story-wrapper');
+    const shield = document.getElementById('text-shield');
+    const btnText = document.getElementById('btn-text');
+    const btnArrow = document.getElementById('btn-arrow');
+
+    btn.addEventListener('click', function(){
+      if (!wrapper.classList.contains('is-expanded')) {
+        wrapper.classList.add('is-expanded');
+        shield.style.display = 'none';
+        btnText.textContent = 'Show Less';
+        btnArrow.style.transform = 'rotate(180deg)';
+      } else {
+        wrapper.classList.remove('is-expanded');
+        shield.style.display = 'block';
+        btnText.textContent = 'Delve Deeper';
+        btnArrow.style.transform = 'rotate(0deg)';
+        wrapper.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
       }
-    })();
-  </script>
+    });
+  })();
+
+
+  (function(){
+    var close = document.getElementById('close-button');
+
+    {% if return_to %}
+      var serverReturn = "{{ return_to|escapejs }}";
+    {% else %}
+      var serverReturn = null;
+    {% endif %}
+
+    try {
+      if (serverReturn){
+        close.setAttribute('href', serverReturn);
+      } else if (sessionStorage.getItem('cg_return_to')){
+        close.setAttribute(
+          'href',
+          sessionStorage.getItem('cg_return_to')
+        );
+        sessionStorage.removeItem('cg_return_to');
+      }
+    } catch(e){}
+  })();
+</script>
+
 {% endblock %}

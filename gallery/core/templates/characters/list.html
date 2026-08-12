@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load lore_tags %}
-{% block title %}Characters | Character Gallery{% endblock %}
+{% load markdownx %}
+{% block title %}Characters | Project: Eidolune{% endblock %}
 
 {% block content %}
   <h1 class="page-title">Characters</h1>
@@ -14,7 +15,6 @@
           <div class="card-overlay">
             <div class="card-lines">
               <div class="card-line card-name-line">{{ character.name|default:'Unnamed character' }}</div>
-
             </div>
           </div>
         </div>

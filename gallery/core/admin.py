@@ -11,9 +11,10 @@ from .models import (
 	TriviaEntry,
     Submerge,
     SubmergeCategory,
-    Creature,
+    Fauna,
     Flora,
-    FloraPropertyTag
+    FloraPropertyTag,
+    Landmark
 )
 
 
@@ -27,6 +28,10 @@ admin.site.register(Region)
 admin.site.register(TriviaEntry)
 admin.site.register(Submerge)
 admin.site.register(SubmergeCategory)
-admin.site.register(Creature)
+admin.site.register(Fauna)
 admin.site.register(Flora)
 admin.site.register(FloraPropertyTag)
+admin.site.register(Landmark)
+
+
+

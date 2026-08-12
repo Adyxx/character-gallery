@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load lore_tags %}
+{% load markdownx %}
 {% block title %}Affiliations | Character Gallery{% endblock %}
 
 {% block content %}
@@ -13,7 +14,7 @@
           {% if affiliation.slug %}
             <a href="{% url 'core:affiliation_detail' affiliation.slug %}">{{ affiliation.name }}</a>
           {% else %}
-            <span class="muted">Unnamed affliction</span>
+            <span class="muted">Unnamed affiliation</span>
           {% endif %}
         {% empty %}
           <p class="muted">No affiliations in this domain.</p>
@@ -29,7 +30,7 @@
         {% if affiliation.slug %}
           <a href="{% url 'core:affiliation_detail' affiliation.slug %}">{{ affiliation.name }}</a>
         {% else %}
-          <span class="muted">Unnamed affliction</span>
+          <span class="muted">Unnamed affiliation</span>
         {% endif %}
       {% empty %}
         <p class="muted">No unassigned affiliations.</p>

@@ -8,7 +8,8 @@ from .models import (
     TriviaEntry,
     Submerge,
     Flora,
-    Creature,
+    Fauna,
+    Landmark
 )
 
 
@@ -22,5 +23,6 @@ REFERENCEABLE_MODELS = {
     "trivia": TriviaEntry,
     "submerge": Submerge,
     "flora": Flora,
-    "creature": Creature,
+    "fauna": Fauna,
+    "landmark": Landmark,
 }

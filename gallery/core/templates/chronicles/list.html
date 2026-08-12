@@ -1,19 +1,107 @@
 {% extends 'base.html' %}
+{% load markdownx %}
 {% load lore_tags %}
-{% block title %}Chronicles | Project: Eidolune{% endblock %}
+
+{% block body_class %}body-chronicles-page{% endblock %}
 
 {% block content %}
-  <section class="detail-panel">
-    <h1 class="page-title">Chronicles</h1>
-    <div class="stack">
-      {% for fragment in story_fragments %}
-        <details class="logbook-entry">
-          <summary>{{ fragment.title|default:'Untitled fragment' }}</summary>
-          <p>{{ fragment.text|default:'-' }}</p>
-        </details>
-      {% empty %}
-        <p class="muted">No chronicles logged yet.</p>
+
+<div class="zzz-carousel-wrapper">
+  <button class="zzz-arrow zzz-arrow-left" id="carousel-prev">←</button>
+  <button class="zzz-arrow zzz-arrow-right" id="carousel-next">→</button>
+
+  <div class="zzz-carousel-container" id="zzz-carousel">
+    {% for story in story_fragments %}
+      <div class="zzz-slide" data-slug="{{ story.slug }}">
+        <div class="zzz-card-inner">
+          <div class="zzz-card-media">
+            {% if story.image %}
+              <img src="{{ story.image.url }}" alt="{{ story.title }}">
+            {% else %}
+              <div class="media-placeholder" style="height: 100%;">No Chronicle Artwork</div>
+            {% endif %}
+          </div>
+          <div class="zzz-card-content">
+            <h2>{{ story.title }}</h2>
+            <div class="zzz-card-text">{% if story.teaser %}{{ story.teaser|markdownify|lore_links|safe }}{% else %}{{ story.text|markdownify|lore_links|safe }}{% endif %}</div>
+            <a href="{% url 'core:chronicle_detail' story.slug %}" class="zzz-read-btn">Explore Record</a>
+          </div>
+        </div>
+      </div>
+        {% empty %}
+        <p class="muted">The chronicles are empty. The timeline remains unwritten.</p>
       {% endfor %}
-    </div>
-  </section>
+  </div>
+
+
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('zzz-carousel');
+    const slides = Array.from(container.querySelectorAll('.zzz-slide'));
+    if (slides.length === 0) return;
+
+    let currentIndex = 0;
+
+    const currentHash = window.location.hash.replace('#', '');
+    if (currentHash) {
+        const targetIndex = slides.findIndex(slide => slide.getAttribute('data-slug') === currentHash);
+        if (targetIndex !== -1) {
+            currentIndex = targetIndex;
+        }
+    }
+
+    function updateCarousel() {
+        slides.forEach((slide, index) => {
+            slide.className = 'zzz-slide';
+            
+            if (index === currentIndex) {
+                slide.classList.add('active');
+                
+                const activeSlug = slide.getAttribute('data-slug');
+                if (activeSlug) {
+                    history.replaceState(null, null, '#' + activeSlug);
+                }
+                
+            } else if (index === (currentIndex + 1) % slides.length) {
+                slide.classList.add('next');
+            } else if (index === (currentIndex - 1 + slides.length) % slides.length) {
+                slide.classList.add('prev');
+            }
+        });
+    }
+
+    updateCarousel();
+
+    document.getElementById('carousel-next').addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        updateCarousel();
+    });
+
+    document.getElementById('carousel-prev').addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        updateCarousel();
+    });
+
+    let scrollTimeout;
+    window.addEventListener('wheel', (e) => {
+        if (!e.target.closest('.zzz-carousel-wrapper')) return;
+        
+        e.preventDefault();
+        
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            if (e.deltaY > 0) {
+                currentIndex = (currentIndex + 1) % slides.length;
+            } else {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            }
+            updateCarousel();
+        }, 80);
+    }, { passive: false });
+});
+</script>
+
 {% endblock %}

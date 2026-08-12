@@ -6,8 +6,8 @@
         <a class="nav-parent" href="{% url 'core:codex' %}">Codex</a>
         <div class="nav-dropdown-menu">
           <a href="{% url 'core:races' %}">Races &amp; Kin</a>
-          <a href="{% url 'core:affiliations' %}">Afflictions</a>
-          <a href="{% url 'core:submerges' %}">Anomalies &amp; Submerges</a>
+          <a href="{% url 'core:affiliations' %}">Affiliations &amp; Factions</a>
+          <a href="{% url 'core:submerges_info' %}">Anomalies &amp; Submerges</a>
         </div>
       </div>
       <div class="nav-dropdown">
@@ -19,5 +19,20 @@
       <a href="{% url 'core:characters' %}">Dramatis Personae</a>
       <a href="{% url 'core:chronicles' %}">Chronicles</a>
     </nav>
+        
+    <div class="search-container">
+      <form class="search-form" id="global-search-form" role="search" autocomplete="off">
+        <div class="search-box">
+          <input type="search" id="global-search" placeholder="Deconstruct..." autocomplete="off" aria-label="Deconstruct">
+          <button type="submit" class="search-button" aria-label="Search">
+            <span class="search-icon">🔍</span>
+          </button>
+        </div>
+      </form>
+      <div id="search-results" class="search-dropdown-menu" style="display: none;">
+          <!-- Search results are displayed here -->
+      </div>
+    </div>
+
   </div>
 </header>

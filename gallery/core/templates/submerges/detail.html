@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load lore_tags %}
+{% load markdownx %}
+
+{% block title %}{{ submerge.name|default:'Submerge' }} | Eidolune Anomaly Codex{% endblock %}
+
+{% block content %}
+<div class="domain-page-wrapper">
+
+  <div class="domain-hero-zone">
+    
+    <div class="domain-intro">
+      <nav class="breadcrumb">
+        <a href="{% url 'core:submerges' %}">← Back to Documented Submerges</a>
+      </nav>
+      
+      <header class="domain-header">
+        <h1 class="page-title">
+          {{ submerge.name|default:'Unnamed Anomaly' }}
+          {% if submerge.hazard_level == 'HIGH' or submerge.hazard_level == 'LETHAL' %}
+            <span class="hazard-indicator-dot" title="Critical Threat Level">⚠️</span>
+          {% endif %}
+        </h1>
+      </header>
+      
+      {% if submerge.description %}
+        <div class="lore-text main-about">
+          {{ submerge.description|markdownify|lore_links|safe }}
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="domain-sidebar-top">
+      <div class="infobox" style="border-color: var(--accent, #a855f7);">
+        <div class="infobox-img-wrapper">
+          {% if submerge.display_image %}
+            <img src="{{ submerge.display_image.url }}" alt="{{ submerge.name }}">
+          {% else %}
+            <div class="media-placeholder">No Visual Record of Anomaly</div>
+          {% endif %}
+        </div>
+
+        <div class="infobox-data">
+          <h3 class="infobox-title">Anomaly Dossier</h3>
+          <dl class="infobox-list" style="display: block;">
+            
+            <div>
+              <dt>Classification</dt>
+              <dd>{{ submerge.category.name }}</dd>
+            </div>
+
+            <div>
+              <dt>Hazard Level</dt>
+              <dd class="hazard-text-{{ submerge.hazard_level|lower }}">
+                {{ submerge.get_hazard_level_display }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Influence Nature</dt>
+              <dd>
+                {% if submerge.influence_nature == 'BENEFICIAL' %}🟩{% elif submerge.influence_nature == 'DESTRUCTIVE' %}🟥{% else %}🟨{% endif %} 
+                {{ submerge.get_influence_nature_display }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Discovered In</dt>
+              <dd>
+                {% if submerge.discovered_in %}
+                  📍 <a href="{% url 'core:region_detail' submerge.discovered_in.domain.slug submerge.discovered_in.slug %}">{{ submerge.discovered_in.name }}</a>
+                  <p >({{ submerge.discovered_in.domain.name }})</p>
+                {% else %}
+                  <p class="muted">Undocumented / Unknown Ground</p>
+                {% endif %}
+              </dd>
+            </div>
+            
+          </dl>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+
+  <main class="domain-full-content">
+
+    {% for section in submerge.stories.all %}
+      {% if not section.is_world_story %}
+        <section class="domain-section custom-lore">
+          <h2>{{ section.title }}</h2>
+          {% if section.image %}
+            <div class="lore-inline-image"><img src="{{ section.image.url }}" alt="{{ section.title }}"></div>
+          {% endif %}
+          <div class="lore-text">{{ section.text|markdownify|lore_links|safe }}</div>
+        </section>
+      {% endif %}
+    {% endfor %}
+
+    <section class="domain-section">
+      <h2>Anomalous Ecosystem</h2>
+      <p class="section-counter">Organisms that have morphed and adapted to survive exclusively inside {{ submerge.name }}:</p>
+      
+      {% if exclusive_flora %}
+        <h3 style="margin-top: 1.5rem;">🌿 Micro-Fauna / Anomalous Flora</h3>
+        <div class="wiki-cards-grid ratio-square">
+          {% for plant in exclusive_flora %}
+            <div class="wiki-card">
+              <div class="wiki-card-info">
+                <h3><a href="{% url 'core:flora_detail' plant.slug %}">{{ plant.name }}</a></h3>
+                <p class="sub-role">{{ plant.get_availability_display }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted" style="margin-top: 1rem; font-size: 0.9rem; font-style: italic;">No endemic flora documented within this zone yet.</p>
+      {% endif %}
+
+      {% if exclusive_creatures %}
+        <h3 style="margin-top: 2.5rem;">🐾 Transformed Entities / Anomalous Fauna</h3>
+        <div class="wiki-cards-grid ratio-square">
+          {% for creature in exclusive_creatures %}
+            <div class="wiki-card">
+              <div class="wiki-card-info">
+                <h3><a href="{% url 'core:fauna_detail' creature.slug %}">{{ creature.name }}</a></h3>
+                <p class="sub-role">{{ creature.get_behavior_display }}</p>
+                <p class="sub-meta">Diet: {{ creature.get_diet_display }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted" style="margin-top: 1rem; font-size: 0.9rem; font-style: italic;">No unique entities sighted inside this boundary yet.</p>
+      {% endif %}
+    </section>
+
+    {% if submerge.trivia_entries.all %}
+      <section class="domain-section">
+        <h2>Field Scout Reports &amp; Glitches (Trivia)</h2>
+        <ul class="info-list">
+          {% for trivia in submerge.trivia_entries.all %}
+            <li>
+              {% if trivia.title %}<strong>{{ trivia.title }}:</strong>{% endif %}
+              {{ trivia.text|markdownify|lore_links|safe }}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    {% if submerge.gallery_images.all %}
+      <section class="domain-section">
+        <h2>Visual Anomalous Records Archive</h2>
+        <div class="mini-gallery-grid">
+          {% for img in submerge.gallery_images.all %}
+            <figure class="gallery-item">
+              <a href="{{ img.image.url }}" target="_blank">
+                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
+              </a>
+              {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </main>
+
+</div>
+{% endblock %}

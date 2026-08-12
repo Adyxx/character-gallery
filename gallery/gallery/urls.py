@@ -24,6 +24,7 @@ from core.views import not_found
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
+    path('markdownx/', include('markdownx.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load lore_tags %}
+{% load markdownx %}
+
+{% block title %}{{ landmark.name|default:'Landmark' }} | Eidolune Atlas{% endblock %}
+
+{% block content %}
+<div class="domain-page-wrapper">
+
+  <div class="domain-hero-zone">
+    
+    <div class="domain-intro">
+      <nav class="breadcrumb">
+        {% if landmark.region %}
+          <a href="{% url 'core:region_detail' landmark.region.domain.slug landmark.region.slug %}">← Back to {{ landmark.region.name }}</a>
+        {% else %}
+          <a href="{% url 'core:domains' %}">← Back to Atlas</a>
+        {% endif %}
+      </nav>
+      
+      <header class="domain-header">
+        <h1 class="page-title">
+          {{ landmark.name|default:'Unnamed Landmark' }}
+          {% if landmark.is_capital %}
+            <span class="hazard-indicator-dot" style="color: var(--accent, #eab308);" title="Capital Seat / Central Registry">👑</span>
+          {% endif %}
+        </h1>
+      </header>
+      
+      {% if landmark.about %}
+        <div class="lore-text main-about">
+          {{ landmark.about|markdownify|lore_links|safe }}
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="domain-sidebar-top">
+      <div class="infobox">
+        <div class="infobox-img-wrapper">
+          {% if landmark.display_image %}
+            <img src="{{ landmark.display_image.url }}" alt="{{ landmark.name }}">
+          {% else %}
+            <div class="media-placeholder">No Architectural Blueprint Available</div>
+          {% endif %}
+        </div>
+
+        <div class="infobox-data">
+          <h3 class="infobox-title">Location Dossier</h3>
+          <dl class="infobox-list" style="display: block;">
+            
+            <div>
+              <dt>Classification</dt>
+              <dd>{{ landmark.get_type_display }}</dd>
+            </div>
+
+            <div>
+              <dt>Seat Status</dt>
+              <dd>
+                {% if landmark.is_capital %}
+                  <span style="color: #eab308;">★ Provincial Capital</span>
+                {% else %}
+                  <span class="muted">Standard Sub-division</span>
+                {% endif %}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Location Coordinates</dt>
+              <dd>
+                Region: <a href="{% url 'core:region_detail' landmark.region.domain.slug landmark.region.slug %}">{{ landmark.region.name }}</a>
+                <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--ink-muted);">
+                  Domain: <a href="{% url 'core:domain_detail' landmark.region.domain.slug %}">{{ landmark.region.domain.name }}</a>
+                </p>
+              </dd>
+            </div>
+            
+          </dl>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <main class="domain-full-content">
+
+    {% for section in landmark.stories.all %}
+      {% if not section.is_world_story %}
+        <section class="domain-section custom-lore">
+          <h2>{{ section.title }}</h2>
+          {% if section.image %}
+            <div class="lore-inline-image"><img src="{{ section.image.url }}" alt="{{ section.title }}"></div>
+          {% endif %}
+          <div class="lore-text">{{ section.text|markdownify|lore_links|safe }}</div>
+        </section>
+      {% endif %}
+    {% endfor %}
+
+    {% if landmark.trivia_entries.all %}
+      <section class="domain-section">
+        <h2>Local Archives &amp; Urban Myths (Trivia)</h2>
+        <ul class="info-list">
+          {% for trivia in landmark.trivia_entries.all %}
+            <li>
+              {% if trivia.title %}<strong>{{ trivia.title }}:</strong>{% endif %}
+              {{ trivia.text|markdownify|lore_links|safe }}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    {% if landmark.gallery_images.all %}
+      <section class="domain-section">
+        <h2>Visual Architectural Records</h2>
+        <div class="mini-gallery-grid">
+          {% for img in landmark.gallery_images.all %}
+            <figure class="gallery-item">
+              <a href="{{ img.image.url }}" target="_blank">
+                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
+              </a>
+              {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </main>
+
+</div>
+{% endblock %}

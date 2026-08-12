@@ -1,29 +1,240 @@
 {% extends 'base.html' %}
 {% load lore_tags %}
+{% load markdownx %}
 
-{% block title %}{{ region.name|default:'Region' }} | Character Gallery{% endblock %}
+{% block title %}{{ region.name|default:'Region' }} | Eidolune Atlas{% endblock %}
 
 {% block content %}
-<section class="detail-panel">
+<div class="domain-page-wrapper">
 
-    <h1 class="page-title">
-        {{ region.name|default:'Unnamed region' }}
-    </h1>
+  <div class="domain-hero-zone">
+    
+    <div class="domain-intro">
+      <nav class="breadcrumb">
+        {% if region.domain %}
+          <a href="{% url 'core:domain_detail' region.domain.slug %}">← {{ region.domain.name }}</a>
+        {% else %}
+          <a href="{% url 'core:domains' %}">← Back to Domains</a>
+        {% endif %}
+      </nav>
+      
+      <header class="domain-header">
+        <h1 class="page-title">{{ region.name|default:'Unnamed Region' }}</h1>
+      </header>
+      
+      {% if region.about %}
+        <div class="lore-text main-about">
+          {{ region.about|markdownify|lore_links|safe }}
+        </div>
+      {% endif %}
+    </div>
 
-    {% if region.about %}
-        <p>{{ region.about|lore_links|safe }}</p>
+    <aside class="domain-sidebar-top">
+      <div class="infobox">
+        <div class="infobox-img-wrapper">
+          {% if region.display_image %}
+            <img src="{{ region.display_image.url }}" alt="{{ region.name }} Landscape">
+          {% else %}
+            <div class="media-placeholder">No Landscape Image Available</div>
+          {% endif %}
+        </div>
+
+        <div class="infobox-data">
+          <h3 class="infobox-title">Regional Registry</h3>
+          <dl class="infobox-list">
+            <div>
+              <dt>Jurisdiction</dt>
+            <dd>
+              {% if region.domain %}
+                <a href="{% url 'core:domain_detail' region.domain.slug %}">{{ region.domain.name }}</a>
+              {% else %}
+                <span class="muted">Independent / Unmapped</span>
+              {% endif %}
+            </dd>
+
+            </div>
+
+            <div>
+              <dt>Regional Seat</dt>
+            <dd>
+              {% if local_capital %}
+                <strong>{{ local_capital.name }}</strong>
+              {% else %}
+                <span class="muted">No Central Seat</span>
+              {% endif %}
+            </dd>
+            </div>
+
+          </dl>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <main class="domain-full-content">
+
+    {% for section in region.stories.all %}
+      {% if not section.is_world_story %}
+        <section class="domain-section custom-lore">
+          <h2>{{ section.title }}</h2>
+          {% if section.image %}
+            <div class="lore-inline-image"><img src="{{ section.image.url }}" alt="{{ section.title }}"></div>
+          {% endif %}
+          <div class="lore-text">{{ section.text|markdownify|lore_links|safe }}</div>
+        </section>
+      {% endif %}
+    {% endfor %}
+
+    {% if local_submerges %}
+      <section class="domain-section">
+        <h2>Documented Submerges</h2>
+        <p class="section-counter">There are <strong>{{ local_submerges|length }}</strong> anomalous zones active in this region:</p>
+        <div class="wiki-cards-grid ratio-landscape">
+          {% for submerge in local_submerges %}
+            <div class="wiki-card">
+              <div class="wiki-card-info">
+                <h3><a href="{% url 'core:submerge_detail' submerge.slug %}">{{ submerge.name }}</a></h3>
+                <p class="sub-role">{{ submerge.category.name }}</p>
+                <p class="sub-meta">Hazard: {{ submerge.get_hazard_level_display }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
     {% endif %}
 
-    <p class="muted">
-        Domain:
-        {% if region.domain and region.domain.name %}
-            <a href="{% url 'core:domain_detail' region.domain.slug %}">
-                {{ region.domain.name }}
-            </a>
-        {% else %}
-            -
-        {% endif %}
-    </p>
+    {% if landmarks %}
+      <section class="domain-section">
+        <h2>Points of Interest &amp; Settlements</h2>
+        <div class="wiki-cards-grid ratio-landscape">
+          {% for landmark in landmarks %}
+            <div class="wiki-card">
+              <div class="wiki-card-info">
+                <h3>{{ landmark.name }}</h3>
+                <p class="sub-role">{{ landmark.get_type_display }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
 
-</section>
+    <section class="domain-section">
+      <h2>Active Affiliations</h2>
+      <p class="section-counter">There are <strong>{{ region.affiliations.all|length }}</strong> factions operating within this territory:</p>
+      <div class="wiki-cards-grid ratio-square">
+        {% for affiliation in region.affiliations.all %}
+          <div class="wiki-card">
+            <div class="wiki-card-media">
+              {% if affiliation.emblem %}
+                <img src="{{ affiliation.emblem.url }}" alt="{{ affiliation.name }}">
+              {% else %}
+                <div class="media-placeholder">No Emblem</div>
+              {% endif %}
+            </div>
+            <div class="wiki-card-info">
+              <h3><a href="{% url 'core:affiliation_detail' affiliation.slug %}">{{ affiliation.name }}</a></h3>
+            </div>
+          </div>
+        {% empty %}
+          <p class="muted">No major factions claim active presence here.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if local_flora or local_creatures %}
+      <section class="domain-section">
+        <h2>Regional Ecosystem</h2>
+        
+        {% if local_flora %}
+          <h3 style="margin-top: 1.5rem;">🌿 Native Flora</h3>
+          <div class="wiki-cards-grid ratio-square">
+            {% for plant in local_flora %}
+              <div class="wiki-card">
+                <div class="wiki-card-info">
+                  <h3><a href="{% url 'core:flora_detail' plant.slug %}">{{ plant.name }}</a></h3>
+                  <p class="sub-role">{{ plant.get_availability_display }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if local_creatures %}
+          <h3 style="margin-top: 2rem;">🐾 Native Fauna</h3>
+          <div class="wiki-cards-grid ratio-square">
+            {% for creature in local_creatures %}
+              <div class="wiki-card">
+                <div class="wiki-card-info">
+                  <h3><a href="{% url 'core:fauna_detail' creature.slug %}">{{ creature.name }}</a></h3>
+                  <p class="sub-role">{{ creature.get_behavior_display }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </section>
+    {% endif %}
+
+    <section class="domain-section">
+      <h2>Notable Residents</h2>
+      <p class="section-counter">There are <strong>{{ local_people|length }}</strong> recorded individuals active in this region:</p>
+      <div class="wiki-cards-grid ratio-square">
+        {% for person in local_people %}
+          <div class="wiki-card">
+            <div class="wiki-card-media">
+              {% if person.icon_image %}
+                <img src="{{ person.icon_image.url }}" alt="{{ person.name }}">
+              {% else %}
+                <div class="media-placeholder">No Avatar</div>
+              {% endif %}
+            </div>
+            <div class="wiki-card-info">
+              <h3><a href="{% url 'core:character_detail' person.slug %}">{{ person.name }}</a></h3>
+              <p class="sub-role">{{ person.role|default:"Citizen" }}</p>
+              {% if person.affiliation %}
+                <p class="sub-meta">{{ person.affiliation.name }}</p>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <p class="muted">No notable figures recorded as born in this region.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if region.trivia_entries.all %}
+      <section class="domain-section">
+        <h2>Regional Lore Snippets (Trivia)</h2>
+        <ul class="info-list">
+          {% for trivia in region.trivia_entries.all %}
+            <li>
+              {% if trivia.title %}<strong>{{ trivia.title }}:</strong>{% endif %}
+              {{ trivia.text|markdownify|lore_links|safe }}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    {% if region.gallery_images.all %}
+      <section class="domain-section">
+        <h2>Visual Records Gallery</h2>
+        <div class="mini-gallery-grid">
+          {% for img in region.gallery_images.all %}
+            <figure class="gallery-item">
+              <a href="{{ img.image.url }}" target="_blank">
+                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
+              </a>
+              {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </main>
+
+</div>
 {% endblock %}

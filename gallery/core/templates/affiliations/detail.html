@@ -1,30 +1,141 @@
 {% extends 'base.html' %}
 {% load lore_tags %}
-{% block title %}{{ affiliation.name|default:'Affliction' }} | Character Gallery{% endblock %}
+{% load markdownx %}
+
+{% block title %}{{ affiliation.name|default:'Faction' }} | Eidolune Codex{% endblock %}
 
 {% block content %}
-  <section class="detail-panel">
-    {% if affiliation.symbol %}
-      <img src="{{ affiliation.symbol.url }}" alt="{{ affiliation.name }} symbol">
-    {% endif %}
-    <h1 class="page-title">{{ affiliation.name|default:'Unnamed affliction' }}</h1>
-    {% if affiliation.about %}<p>{{ affiliation.about|lore_links|safe }}</p>{% endif %}
+<div class="domain-page-wrapper">
 
-    <div class="section">
-      <h2>Region</h2>
-      <ul class="info-list">
-        {% for region in affiliation.regions.all %}
-          <li>
-            {% if region.slug %}
-              <a href="{% url 'core:region_detail' region.slug %}">{{ region.name }}</a>
-            {% else %}
-              {{ region.name|default:'Unnamed region' }}
-            {% endif %}
-          </li>
-        {% empty %}
-          <li class="muted">No regions assigned.</li>
-        {% endfor %}
-      </ul>
+  <div class="domain-hero-zone">
+    
+    <div class="domain-intro">
+      <nav class="breadcrumb">
+        <a href="{% url 'core:affiliations' %}">← Back to Factions</a>
+      </nav>
+      
+      <header class="domain-header">
+        <h1 class="page-title">{{ affiliation.name|default:'Unnamed Faction' }}</h1>
+      </header>
+      
+      {% if affiliation.about %}
+        <div class="lore-text main-about">
+          {{ affiliation.about|markdownify|lore_links|safe }}
+        </div>
+      {% endif %}
     </div>
-  </section>
+
+    <aside class="domain-sidebar-top">
+      <div class="infobox">
+        <div class="infobox-img-wrapper">
+          {% if affiliation.emblem %}
+            <img src="{{ affiliation.emblem.url }}" alt="{{ affiliation.name }} Heraldry">
+          {% else %}
+            <div class="media-placeholder">No Emblem Recorded</div>
+          {% endif %}
+        </div>
+
+        <div class="infobox-data">
+          <h3 class="infobox-title">Faction Charter</h3>
+          <dl class="infobox-list" style="display: block;">
+            
+            <div>
+              <dt>Operational Territories</dt>
+            <dd>
+              <ul>
+                {% for region in affiliation.regions.all %}
+                  <li>
+                  <a href="{% url 'core:region_detail' region.domain.slug region.slug %}">{{ region.name }} ({{ region.domain.name }})</a>
+                  </li>
+                {% empty %}
+                  <li class="muted">No official territory claimed.</li>
+                {% endfor %}
+              </ul>
+            </dd>
+            </div>
+            
+          </dl>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+
+  <main class="domain-full-content">
+
+    {% for section in affiliation.stories.all %}
+      {% if not section.is_world_story %}
+        <section class="domain-section custom-lore">
+          <h2>{{ section.title }}</h2>
+          {% if section.image %}
+            <div class="lore-inline-image"><img src="{{ section.image.url }}" alt="{{ section.title }}"></div>
+          {% endif %}
+          <div class="lore-text">{{ section.text|markdownify|lore_links|safe }}</div>
+        </section>
+      {% endif %}
+    {% endfor %}
+
+    <section class="domain-section">
+      <h2>Registered Operatives &amp; Members</h2>
+      <p class="section-counter">There are <strong>{{ members|length }}</strong> notable figures serving this affiliation:</p>
+      
+      <div class="wiki-cards-grid ratio-square">
+        {% for person in members %}
+          <div class="wiki-card">
+            <div class="wiki-card-media">
+              {% if person.icon_image %}
+                <img src="{{ person.icon_image.url }}" alt="{{ person.name }}">
+              {% else %}
+                <div class="media-placeholder">No Avatar</div>
+              {% endif %}
+            </div>
+            <div class="wiki-card-info">
+              <h3><a href="{% url 'core:character_detail' person.slug %}">{{ person.name }}</a></h3>
+              <p class="sub-role">{{ person.role|default:"Faction Member" }}</p>
+              
+              {% if person.birthplace %}
+                <p class="sub-meta">Origin: {{ person.birthplace.name }}</p>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <p class="muted">No operatives currently registered under this charter.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if affiliation.trivia_entries.all %}
+      <section class="domain-section">
+        <h2>Faction Dossier Snippets (Trivia)</h2>
+        <ul class="info-list">
+          {% for trivia in affiliation.trivia_entries.all %}
+            <li>
+              {% if trivia.title %}<strong>{{ trivia.title }}:</strong>{% endif %}
+              {{ trivia.text|markdownify|lore_links|safe }}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    {% if affiliation.gallery_images.all %}
+      <section class="domain-section">
+        <h2>Visual Records Archive</h2>
+        <div class="mini-gallery-grid">
+          {% for img in affiliation.gallery_images.all %}
+            <figure class="gallery-item">
+              <a href="{{ img.image.url }}" target="_blank">
+                <img src="{{ img.image.url }}" alt="{{ img.caption }}">
+              </a>
+              {% if img.caption %}<figcaption>{{ img.caption }}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </main>
+
+</div>
 {% endblock %}

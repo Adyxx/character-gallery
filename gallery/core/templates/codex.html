@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
-{% load lore_tags %}
-{% block title %}Codex | Project: Eidolune{% endblock %}
-
 {% block content %}
-  <section class="detail-panel">
-    <h1 class="page-title">Codex</h1>
-    <p class="muted">Index of world pillars, aligned records, and unstable knowledge.</p>
-  </section>
+<div class="domain-page-wrapper" style="max-width: 800px;">
+  <h1 class="page-title">The Grand Codex</h1>
+  <p class="section-counter">A compendium of existential laws, mortal lineages, and anomalous taxonomy.</p>
+  
+  <div style="display: flex; flex-direction: column; gap: 2.5rem; margin-top: 3rem;">
+    <section class="wiki-card" style="padding: 1.5rem;">
+      <h3><a href="{% url 'core:races' %}">Races &amp; Kin</a></h3>
+      <p>Anatomical guides and social structures of the documented lineages surviving across Eidolune.</p>
+    </section>
+    <section class="wiki-card" style="padding: 1.5rem;">
+      <h3><a href="{% url 'core:affiliations' %}">Affiliations &amp; Factions</a></h3>
+      <p>Charters, military structures, and political allegiances of active factions.</p>
+    </section>
+  </div>
+</div>
 {% endblock %}

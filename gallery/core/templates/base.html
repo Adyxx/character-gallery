@@ -7,8 +7,9 @@
   <title>{% block title %}Character Gallery{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'core/css/site.css' %}">
   <script defer src="{% static 'core/js/site.js' %}"></script>
+  <script defer src="{% static 'core/js/search.js' %}"></script>
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
   {% include 'partials/navbar.html' %}
   <main class="site-shell">
     {% block content %}{% endblock %}
